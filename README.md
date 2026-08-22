@@ -1,4 +1,3 @@
-```markdown
 # 💊 MedFinder — Real-Time Last-Mile Medicine Availability Network
 
 > **"Help is here, closer than you think."**  
@@ -31,9 +30,6 @@ During medical emergencies or urgent health needs, finding prescribed medicines 
 
 MedFinder eliminates the need for complex, heavy inventory software by flipping the model into a **Reverse-Demand Real-Time Verification Dispatch**:
 
-
-```
-
 [ Patient Searches Medicine ]
 │
 ▼
@@ -47,8 +43,6 @@ MedFinder eliminates the need for complex, heavy inventory software by flipping 
 │
 ▼
 [ Secure 4-Digit Counter Handover Verification ]
-
-```
 
 ---
 
@@ -106,24 +100,12 @@ npm install
 # 4. Start the local development server
 npm run dev
 
-```
+🔒 Security & Edge Case Handling
+JIT Anti-Spam Barrier: Unverified users cannot lock pharmacy inventory without mobile OTP verification.
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to view the interactive split-screen simulator.
+Race-Condition Protection: Medicines are reserved on a first-to-claim basis with automatic 30-minute expiration if unclaimed.
 
----
+Privacy by Design: Patient phone numbers are masked on the pharmacist terminal (98765-XXXXX) until physical verification at the counter.
 
-## 🔒 Security & Edge Case Handling
-
-1. **JIT Anti-Spam Barrier:** Unverified users cannot lock pharmacy inventory without mobile OTP verification.
-2. **Race-Condition Protection:** Medicines are reserved on a first-to-claim basis with automatic 30-minute expiration if unclaimed.
-3. **Privacy by Design:** Patient phone numbers are masked on the pharmacist terminal (`98765-XXXXX`) until physical verification at the counter.
-
----
-
-## 📄 License
-
-This project was built for hackathon demonstration purposes under the **MIT License**.
-
-```
-
-```
+📄 License
+This project was built for hackathon demonstration purposes under the MIT License.
