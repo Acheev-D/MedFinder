@@ -3,9 +3,7 @@
 > **"Help is here, closer than you think."**  
 > A zero-friction, demand-driven verification network connecting patients directly with local neighborhood pharmacies in real time.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://medfinder-orpin.vercel.app)
-[![Tech Stack](https://img.shields.io/badge/Stack-React_18_|_TypeScript_|_Tailwind_CSS-blue?style=for-the-badge&logo=react)](https://github.com/Acheev-D/MedFinder)
-[![Build Tool](https://img.shields.io/badge/Build-Vite-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev)
+[![Live Demo]([https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://medfinder-orpin.vercel.app](https://med-finder-vit.vercel.app/))
 
 ---
 
