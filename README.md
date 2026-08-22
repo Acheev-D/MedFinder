@@ -1,9 +1,20 @@
+```markdown
 # 💊 MedFinder — Real-Time Last-Mile Medicine Availability Network
 
 > **"Help is here, closer than you think."**  
 > A zero-friction, demand-driven verification network connecting patients directly with local neighborhood pharmacies in real time.
 
-[![Live Demo](https://med-finder-vit.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://med-finder-vit.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Acheev--D%2FMedFinder-181717?style=for-the-badge&logo=github)](https://github.com/Acheev-D/MedFinder)
+[![Tech Stack](https://img.shields.io/badge/Stack-React_18_|_TypeScript_|_Tailwind_CSS-blue?style=for-the-badge&logo=react)](https://github.com/Acheev-D/MedFinder)
+[![Build Tool](https://img.shields.io/badge/Build-Vite-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev)
+
+---
+
+## 🔗 Live Application
+
+Experience the full interactive split-screen prototype:  
+👉 **[https://med-finder-vit.vercel.app/](https://med-finder-vit.vercel.app/)**
 
 ---
 
@@ -19,6 +30,10 @@ During medical emergencies or urgent health needs, finding prescribed medicines 
 ## 💡 The Solution
 
 MedFinder eliminates the need for complex, heavy inventory software by flipping the model into a **Reverse-Demand Real-Time Verification Dispatch**:
+
+
+```
+
 [ Patient Searches Medicine ]
 │
 ▼
@@ -32,6 +47,8 @@ MedFinder eliminates the need for complex, heavy inventory software by flipping 
 │
 ▼
 [ Secure 4-Digit Counter Handover Verification ]
+
+```
 
 ---
 
@@ -88,3 +105,25 @@ npm install
 
 # 4. Start the local development server
 npm run dev
+
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser to view the interactive split-screen simulator.
+
+---
+
+## 🔒 Security & Edge Case Handling
+
+1. **JIT Anti-Spam Barrier:** Unverified users cannot lock pharmacy inventory without mobile OTP verification.
+2. **Race-Condition Protection:** Medicines are reserved on a first-to-claim basis with automatic 30-minute expiration if unclaimed.
+3. **Privacy by Design:** Patient phone numbers are masked on the pharmacist terminal (`98765-XXXXX`) until physical verification at the counter.
+
+---
+
+## 📄 License
+
+This project was built for hackathon demonstration purposes under the **MIT License**.
+
+```
+
+```
