@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Search,
   Pill,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
@@ -21,7 +20,8 @@ export const SearchScreen: React.FC = () => {
     selectMedicine,
     allowAlternatives,
     setAllowAlternatives,
-    startStoreCheck
+    startStoreCheck,
+    t
   } = useSimulator();
 
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -43,13 +43,9 @@ export const SearchScreen: React.FC = () => {
       <div className="space-y-4">
         
         {/* Intro Greeting Banner */}
-        <div className="pt-1">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50/80 text-brand-700 text-[11px] font-semibold mb-1.5 border border-blue-200/50">
-            <Sparkles className="w-3 h-3 text-brand-600" />
-            <span>Zero-Wait Counter Verification</span>
-          </div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-tight">
-            Find Prescribed Medicine Nearby
+        <div className="pt-2">
+          <h1 className="text-xl font-black text-slate-900 tracking-tight leading-tight">
+            {t.tagline}
           </h1>
         </div>
 
@@ -66,7 +62,7 @@ export const SearchScreen: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsFocused(true)}
-              placeholder="Search medicine brand or generic name..."
+              placeholder={t.searchPlaceholder}
               className="w-full py-3.5 pr-4 text-sm font-medium text-slate-800 placeholder-slate-400 bg-transparent outline-none rounded-full"
             />
             {searchQuery && (
@@ -83,7 +79,7 @@ export const SearchScreen: React.FC = () => {
           {isFocused && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-200/90 shadow-xl z-30 overflow-hidden animate-slide-up">
               <div className="p-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 border-b border-slate-100 bg-slate-50/70">
-                Matching Prescriptions ({suggestions.length})
+                {t.matchingPrescriptions(suggestions.length)}
               </div>
               <div className="max-h-48 overflow-y-auto">
                 {suggestions.map((med) => (
@@ -110,7 +106,7 @@ export const SearchScreen: React.FC = () => {
           )}
         </div>
 
-        {/* Selected Medicine Info Card & "Same Formula Alternative" Card (No upfront hardcoded prices) */}
+        {/* Selected Medicine Info Card & "Similar Medicine" Card */}
         {selectedMedicine && (
           <div className="space-y-3">
             {/* Prescribed Medicine Base Card */}
@@ -131,35 +127,35 @@ export const SearchScreen: React.FC = () => {
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200">
                   <ShieldCheck className="w-3 h-3 text-brand-600" />
-                  Prescribed Brand
+                  {t.prescribedBrand}
                 </span>
               </div>
             </div>
 
-            {/* Same Formula Alternative Recommendation Card */}
+            {/* Similar Medicine Recommendation Card */}
             <div className={`relative overflow-hidden rounded-2xl p-4 border transition-all duration-300 ${
               allowAlternatives
                 ? 'bg-gradient-to-br from-teal-500/[0.12] via-emerald-500/[0.08] to-indigo-500/[0.1] border-teal-400/60 shadow-md ring-1 ring-teal-500/20'
                 : 'bg-slate-50/90 border-slate-200/90 shadow-sm'
             }`}>
               
-              {/* Dynamic Status Pill Badge */}
+              {/* Dynamic Status Pill Badge: "Similar Medicine" */}
               <div className="flex items-center justify-between mb-3">
                 {allowAlternatives ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-600 text-white shadow-xs animate-slide-up">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Searching for both {selectedMedicine.brandName} & {selectedMedicine.genericEquivalent.name}
+                    {t.searchingBoth(selectedMedicine.brandName, selectedMedicine.genericEquivalent.name)}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700">
                     <Lock className="w-3 h-3 text-slate-500" />
-                    Searching for {selectedMedicine.brandName} only
+                    {t.similarMedicineTitle}
                   </span>
                 )}
 
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
                   <Layers className="w-3 h-3 text-teal-600" />
-                  Same Formula Alternative
+                  {t.similarMedicineTitle}
                 </span>
               </div>
 
@@ -169,14 +165,14 @@ export const SearchScreen: React.FC = () => {
                   {selectedMedicine.genericEquivalent.name}
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  Contains the exact same active salt formula as <strong>{selectedMedicine.brandName}</strong> at standard generic rates.
+                  {t.similarMedicineDesc}
                 </p>
               </div>
 
-              {/* iOS Toggle Switch Section */}
+              {/* Alternative Formulation Toggle Switch */}
               <div className="flex items-center justify-between gap-3 pt-2.5 border-t border-slate-200/70">
                 <label htmlFor="generic-toggle" className="text-xs font-bold text-slate-900 cursor-pointer block leading-tight">
-                  Accept same formula generic alternative?
+                  {t.toggleSimilarMedicine}
                 </label>
 
                 {/* iOS-Style Switch */}
@@ -196,13 +192,13 @@ export const SearchScreen: React.FC = () => {
         )}
       </div>
 
-      {/* Primary Action Button */}
+      {/* Primary Action Button: "Find Stores" */}
       <div className="pt-4">
         <button
           onClick={startStoreCheck}
           className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all group"
         >
-          <span>Find at Stores Near Me</span>
+          <span>{t.findStoresBtn}</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
         </button>
       </div>

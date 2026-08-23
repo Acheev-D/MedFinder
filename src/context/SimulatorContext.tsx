@@ -16,6 +16,8 @@ import type {
 import { MEDICINE_CATALOG, PRIMARY_STORE, NEARBY_STORES_3KM, EXPANDED_STORES_8KM } from '../data/medicines';
 import { DEFAULT_SAMPLE_INVENTORY, SAMPLE_INVENTORY_ITEMS } from '../data/sampleInventory';
 import { sound } from '../utils/audio';
+import { TRANSLATIONS } from '../utils/translations';
+import type { Language } from '../utils/translations';
 
 export interface VerificationResult {
   success: boolean;
@@ -35,6 +37,17 @@ interface SimulatorContextType {
   pickupCode: string;
   isDirectionsOpen: boolean;
   savedUntilTimeStr: string;
+
+  // Language & Translation Support
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  toggleLanguage: () => void;
+  t: typeof TRANSLATIONS['en'];
+
+  // Outer Workspace Night Theme State (Isolated to outer canvas)
+  isNightMode: boolean;
+  setIsNightMode: (night: boolean) => void;
+  toggleNightMode: () => void;
 
   // Intro Splash State (Patient Mobile Frame Only)
   showSplash: boolean;
@@ -113,6 +126,12 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [activeOffer, setActiveOffer] = useState<ActiveOffer | null>(null);
   const [pickupCode] = useState<string>('4829');
 
+  // Language state (Default: 'en')
+  const [language, setLanguage] = useState<Language>('en');
+
+  // Outer Workspace Theme (Default: false / light mode)
+  const [isNightMode, setIsNightMode] = useState<boolean>(false);
+
   // Intro Splash State (Patient Mobile Scope)
   const [showSplash, setShowSplash] = useState<boolean>(true);
 
@@ -140,6 +159,16 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isDirectionsOpen, setIsDirectionsOpen] = useState<boolean>(false);
   const [savedUntilTimeStr, setSavedUntilTimeStr] = useState<string>('4:15 PM');
+
+  const t = TRANSLATIONS[language];
+
+  const toggleLanguage = useCallback(() => {
+    setLanguage(prev => (prev === 'en' ? 'hi' : 'en'));
+  }, []);
+
+  const toggleNightMode = useCallback(() => {
+    setIsNightMode(prev => !prev);
+  }, []);
 
   const addLog = useCallback((type: ActivityLogItem['type'], title: string, description: string, badge?: string) => {
     const now = new Date();
@@ -517,12 +546,12 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (e) e.preventDefault();
     const clean = phoneInput.replace(/\D/g, '');
     if (clean.length !== 10) {
-      setAuthError('Please enter a valid 10-digit mobile number.');
+      setAuthError(t.enterValidPhone);
       return;
     }
     setAuthError('');
     setAuthStep('OTP');
-  }, [phoneInput]);
+  }, [phoneInput, t]);
 
   // Step 2: Verify OTP & Complete Hold
   const handleVerifyOtp = useCallback((e?: React.FormEvent) => {
@@ -535,9 +564,9 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
       setIsAuthModalOpen(false);
       completeReservation(phoneInput);
     } else {
-      setAuthError('Please enter a 4-digit code (use 1234).');
+      setAuthError(t.enterValidOtp);
     }
-  }, [otpInput, phoneInput, completeReservation]);
+  }, [otpInput, phoneInput, completeReservation, t]);
 
   // Demo helper: Auto-fill OTP 1234
   const handleAutoFillOtp = useCallback(() => {
@@ -674,6 +703,13 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
         pickupCode,
         isDirectionsOpen,
         savedUntilTimeStr,
+        language,
+        setLanguage,
+        toggleLanguage,
+        t,
+        isNightMode,
+        setIsNightMode,
+        toggleNightMode,
         showSplash,
         setShowSplash,
         replaySplash,

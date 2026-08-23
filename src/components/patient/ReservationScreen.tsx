@@ -14,7 +14,8 @@ export const ReservationScreen: React.FC = () => {
     pickupCode,
     savedUntilTimeStr,
     setIsDirectionsOpen,
-    cancelHold
+    cancelHold,
+    t
   } = useSimulator();
 
   const [copied, setCopied] = useState<boolean>(false);
@@ -35,14 +36,14 @@ export const ReservationScreen: React.FC = () => {
         <div className="text-center pt-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 shadow-xs mb-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping-slow"></span>
-            <span>Item Reserved At Counter</span>
+            <span>{t.pickupPassTitle}</span>
           </div>
 
           <h2 className="text-xl font-extrabold text-slate-900 leading-tight">
-            Your Pickup Pass
+            {t.pickupPassTitle}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Walk into the store and show this pass to pick up immediately.
+            {t.passInstruction}
           </p>
         </div>
 
@@ -60,15 +61,15 @@ export const ReservationScreen: React.FC = () => {
                 </div>
               </div>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-white/20 rounded-md backdrop-blur-xs">
-                Active Hold
+                {t.inStockBadge}
               </span>
             </div>
           </div>
 
-          {/* Large Pickup Code Area (Non-Anxiety Design) */}
+          {/* Large Pickup Code Area */}
           <div className="p-5 text-center space-y-2 bg-gradient-to-b from-white to-slate-50/50">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-              Counter Verification Code
+              {t.verificationCodeTitle}
             </span>
 
             {/* Pickup Code Display */}
@@ -80,17 +81,16 @@ export const ReservationScreen: React.FC = () => {
               <button
                 onClick={handleCopyCode}
                 title="Copy Pickup Code"
-                className="w-11 h-11 rounded-2xl bg-blue-50 hover:bg-blue-100 text-brand-600 border border-blue-200 flex items-center justify-center transition-colors"
+                className="w-11 h-11 rounded-2xl bg-blue-50 hover:bg-blue-100 text-brand-600 border border-blue-200 flex items-center justify-center transition-colors cursor-pointer"
               >
                 {copied ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
               </button>
             </div>
 
-            {/* Calm Expiration Time Notice (No ticking stress clock) */}
+            {/* Calm Expiration Time Notice */}
             <div className="pt-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200/70">
-                <span className="text-sm">🟢</span>
-                <span>Saved at counter until <strong>{savedUntilTimeStr}</strong> (approx 30 mins)</span>
+                <span>{t.savedUntil(savedUntilTimeStr)}</span>
               </div>
             </div>
           </div>
@@ -110,11 +110,11 @@ export const ReservationScreen: React.FC = () => {
                 <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${
                   activeOffer.isGeneric ? 'bg-teal-100 text-teal-800' : 'bg-blue-100 text-blue-800'
                 }`}>
-                  {activeOffer.isGeneric ? 'Generic bio-equivalent' : 'Exact Brand'}
+                  {activeOffer.isGeneric ? t.similarMedicineTitle : t.prescribedBrand}
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-[10px] text-slate-400 font-semibold">Pay At Store</span>
+                <span className="text-[10px] text-slate-400 font-semibold">{t.payAtStore}</span>
                 <div className="text-base font-extrabold text-slate-900">₹{activeOffer.price.toFixed(2)}</div>
               </div>
             </div>
@@ -123,7 +123,7 @@ export const ReservationScreen: React.FC = () => {
             <div className="bg-amber-50 rounded-xl p-2.5 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
               <FileText className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <span>
-                <strong>Safety Rule:</strong> Show this code <span className="underline font-semibold">#{pickupCode}</span> & your physical prescription at the counter for dispensing.
+                <strong>{t.prescriptionNotice}</strong>
               </span>
             </div>
           </div>
@@ -134,17 +134,17 @@ export const ReservationScreen: React.FC = () => {
       <div className="pt-4 space-y-2">
         <button
           onClick={() => setIsDirectionsOpen(true)}
-          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all"
+          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
         >
           <Navigation className="w-4 h-4" />
-          <span>🗺️ Open Directions in Maps</span>
+          <span>{t.directionsBtn}</span>
         </button>
 
         <button
           onClick={() => cancelHold()}
-          className="w-full py-2.5 text-center text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors"
+          className="w-full py-2.5 text-center text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
         >
-          Cancel Hold
+          {t.cancelHoldBtn}
         </button>
       </div>
     </div>

@@ -10,7 +10,7 @@ import {
 import { useSimulator } from '../../context/SimulatorContext';
 
 export const CompletedScreen: React.FC = () => {
-  const { activeOffer, resetSimulator, pickupCode } = useSimulator();
+  const { activeOffer, resetSimulator, pickupCode, t } = useSimulator();
 
   return (
     <div className="flex-1 p-4 flex flex-col justify-between animate-slide-up">
@@ -28,7 +28,7 @@ export const CompletedScreen: React.FC = () => {
 
         <div>
           <h2 className="text-xl font-black text-slate-900 leading-tight">
-            Prescription Handed Over!
+            {t.completedTitle}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
             Token #{pickupCode} verified and dispensed at counter.
@@ -41,7 +41,7 @@ export const CompletedScreen: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-2 text-xs">
               <span className="font-bold text-slate-700 flex items-center gap-1.5">
                 <Receipt className="w-3.5 h-3.5 text-brand-600" />
-                Counter Fulfillment Slip
+                {t.customerReceipt}
               </span>
               <span className="text-[11px] font-semibold text-emerald-600">PAID & PICKED UP</span>
             </div>
@@ -52,26 +52,26 @@ export const CompletedScreen: React.FC = () => {
                 <span className="font-bold text-slate-900">{activeOffer.medicineName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Pharmacy:</span>
+                <span className="text-slate-500">{t.verifiedPharmacy}:</span>
                 <span className="font-medium text-slate-800">{activeOffer.pharmacyName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Amount Paid:</span>
+                <span className="text-slate-500">{t.payAtStore}:</span>
                 <span className="font-extrabold text-slate-900">₹{activeOffer.price.toFixed(2)}</span>
               </div>
               {activeOffer.isGeneric && (
                 <div className="flex justify-between pt-1 border-t border-slate-100 text-emerald-700 font-bold">
                   <span className="flex items-center gap-1">
                     <TrendingDown className="w-3.5 h-3.5" />
-                    Total Savings:
+                    {t.savePercent(activeOffer.savingsPercent)}
                   </span>
-                  <span>₹{activeOffer.savingsAmount.toFixed(2)} ({activeOffer.savingsPercent}%)</span>
+                  <span>₹{activeOffer.savingsAmount.toFixed(2)}</span>
                 </div>
               )}
             </div>
 
             <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-              <span>Physical Rx Verified</span>
+              <span>{t.prescriptionNotice}</span>
               <span>100% Genuine CDSCO Batch</span>
             </div>
           </div>
@@ -80,7 +80,7 @@ export const CompletedScreen: React.FC = () => {
         {/* Patient Review Tip */}
         <div className="bg-blue-50/60 rounded-xl p-3 border border-blue-100 text-[11px] text-slate-600 flex items-center justify-center gap-2">
           <Heart className="w-4 h-4 text-rose-500 fill-rose-500 shrink-0" />
-          <span>Thank you for using zero-waste reverse-demand medicine verification!</span>
+          <span>{t.completedSubtitle}</span>
         </div>
       </div>
 
@@ -88,9 +88,9 @@ export const CompletedScreen: React.FC = () => {
       <div className="pt-4">
         <button
           onClick={resetSimulator}
-          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all"
+          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
         >
-          <span>Search Another Medicine</span>
+          <span>{t.newSearchBtn}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

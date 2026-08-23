@@ -22,7 +22,8 @@ export const AuthBottomSheet: React.FC = () => {
     handleVerifyOtp,
     handleAutoFillOtp,
     closeAuthModal,
-    activeOffer
+    activeOffer,
+    t
   } = useSimulator();
 
   const otpRefs = [
@@ -75,7 +76,7 @@ export const AuthBottomSheet: React.FC = () => {
           <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto -mr-2"></div>
           <button
             onClick={closeAuthModal}
-            className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
+            className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -87,13 +88,13 @@ export const AuthBottomSheet: React.FC = () => {
             <div className="text-center space-y-1">
               <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-brand-700 text-[11px] font-bold border border-blue-200/60">
                 <ShieldCheck className="w-3 h-3 text-brand-600" />
-                <span>Verify Mobile to Reserve</span>
+                <span>{t.authModalTitle}</span>
               </div>
               <h3 className="text-lg font-black text-slate-900 leading-tight">
-                📱 Quick Verification
+                {t.authModalTitle}
               </h3>
               <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                Enter your mobile number to lock this medicine for 30 minutes.
+                {t.authModalDesc}
               </p>
             </div>
 
@@ -112,7 +113,7 @@ export const AuthBottomSheet: React.FC = () => {
             {/* Phone Input Box */}
             <div className="space-y-1">
               <label htmlFor="phone-input" className="text-xs font-bold text-slate-700 block">
-                Mobile Number
+                {t.phoneLabel}
               </label>
               <div className="relative flex items-center">
                 <span className="absolute left-3.5 text-xs font-bold text-slate-500 font-mono">
@@ -140,9 +141,9 @@ export const AuthBottomSheet: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-xs shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all group"
+              className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-xs shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all group cursor-pointer"
             >
-              <span>Send Verification Code</span>
+              <span>{t.sendOtpBtn}</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </form>
@@ -152,13 +153,13 @@ export const AuthBottomSheet: React.FC = () => {
             <div className="text-center space-y-1">
               <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200">
                 <Clock className="w-3 h-3 text-emerald-600" />
-                <span>30-Min Counter Hold</span>
+                <span>{t.counterHoldDuration}</span>
               </div>
               <h3 className="text-lg font-black text-slate-900 leading-tight">
-                📱 Enter Verification Code
+                {t.authModalTitle}
               </h3>
               <p className="text-xs text-slate-500">
-                Enter the 4-digit code sent to <strong className="text-slate-800 font-mono">+91 {maskedPhoneDisplay}</strong>
+                {t.otpPrompt} <strong className="text-slate-800 font-mono">+91 {maskedPhoneDisplay}</strong>
               </p>
             </div>
 
@@ -184,10 +185,10 @@ export const AuthBottomSheet: React.FC = () => {
               <button
                 type="button"
                 onClick={handleAutoFillOtp}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition-colors shadow-2xs cursor-pointer"
               >
                 <Zap className="w-3.5 h-3.5 text-amber-600 fill-amber-600" />
-                <span>⚡ Auto-fill Demo Code (1234)</span>
+                <span>{t.autoFillDemo}</span>
               </button>
             </div>
 
@@ -200,10 +201,10 @@ export const AuthBottomSheet: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all"
+              className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>Verify & Confirm Hold</span>
+              <span>{t.verifyOtpBtn}</span>
             </button>
           </form>
         )}

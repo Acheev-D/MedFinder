@@ -108,7 +108,7 @@ export const InquiryAlertCard: React.FC = () => {
                   </div>
                   
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    1-tap counter response • Auto-expires in <span className="font-bold text-brand-600 font-mono">{timerSeconds}s</span>
+                    Auto-expires in <span className="font-bold text-brand-600 font-mono">{timerSeconds}s</span>
                   </p>
                 </div>
               </div>

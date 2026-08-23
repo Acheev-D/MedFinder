@@ -2,8 +2,7 @@ import React from 'react';
 import {
   MapPin,
   Store,
-  Clock,
-  Radio
+  Clock
 } from 'lucide-react';
 import { useSimulator } from '../../context/SimulatorContext';
 
@@ -15,7 +14,8 @@ export const RadarScreen: React.FC = () => {
     activeStoreCount,
     expandRadius,
     status,
-    fastForwardTimer
+    fastForwardTimer,
+    t
   } = useSimulator();
 
   const progressPercent = ((60 - timerSeconds) / 60) * 100;
@@ -27,18 +27,13 @@ export const RadarScreen: React.FC = () => {
 
         {/* Status Header */}
         <div className="text-center pt-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-brand-700 text-xs font-semibold border border-blue-200/50 shadow-xs mb-2">
-            <Radio className="w-3.5 h-3.5 text-brand-600 animate-pulse" />
-            <span>Active Counter Verification</span>
-          </div>
-
           <h2 className="text-lg font-bold text-slate-900 leading-tight">
             {isTimedOut
-              ? 'No Quick Replies Nearby'
-              : `Asking ${activeStoreCount} medical stores near you...`}
+              ? (t.timeoutHeader || 'No Quick Replies Nearby')
+              : t.askingStores(activeStoreCount)}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
-            Looking for <span className="font-semibold text-slate-700">{selectedMedicine?.brandName}</span> within {searchRadius}
+            {t.lookingForWithin(selectedMedicine?.brandName || '', searchRadius)}
           </p>
         </div>
 
@@ -85,8 +80,8 @@ export const RadarScreen: React.FC = () => {
               <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2 border border-slate-200">
                 <Store className="w-7 h-7" />
               </div>
-              <p className="text-xs font-semibold text-slate-700">Stores within {searchRadius} did not confirm stock</p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Let's check larger 24/7 pharmacies nearby</p>
+              <p className="text-xs font-semibold text-slate-700">{t.timeoutHeader}</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">{t.timeoutDesc}</p>
             </div>
           )}
         </div>
@@ -96,10 +91,10 @@ export const RadarScreen: React.FC = () => {
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-slate-700 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-brand-600" />
-              Direct Pharmacist Ping
+              {t.searchingStatus}
             </span>
             <span className="font-mono font-bold text-brand-700">
-              {timerSeconds}s remaining
+              {t.timeRemaining(timerSeconds)}
             </span>
           </div>
 
@@ -117,13 +112,13 @@ export const RadarScreen: React.FC = () => {
                 onClick={fastForwardTimer}
                 className="text-[10px] text-brand-600 hover:underline font-semibold"
               >
-                Fast-forward
+                Fast-forward ⚡
               </button>
             </div>
           )}
         </div>
 
-        {/* Radius Expansion Card (Accessible anytime or on timeout) */}
+        {/* Radius Expansion Card */}
         <div className={`rounded-2xl p-3.5 border transition-all ${
           isTimedOut
             ? 'bg-gradient-to-br from-indigo-50 via-blue-50 to-white border-indigo-300 shadow-md ring-2 ring-indigo-500/20 animate-slide-up'
@@ -135,12 +130,10 @@ export const RadarScreen: React.FC = () => {
             </div>
             <div className="flex-1">
               <h3 className="text-xs font-bold text-slate-800">
-                {isTimedOut ? 'Check stores a bit further away?' : 'Widen search distance?'}
+                {t.timeoutHeader}
               </h3>
               <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                {searchRadius === '3km'
-                  ? 'No stores nearby replied yet. Expand to 6 stores within 8 km (including 24x7 superstores).'
-                  : 'Already searching 8 km radius (6 stores across town).'}
+                {t.timeoutDesc}
               </p>
             </div>
           </div>
@@ -151,7 +144,7 @@ export const RadarScreen: React.FC = () => {
               className="mt-3 w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold text-xs shadow-md shadow-indigo-500/20 flex items-center justify-center gap-1.5 transition-all"
             >
               <MapPin className="w-3.5 h-3.5" />
-              <span>📍 Search 5 km Further (6 Stores)</span>
+              <span>📍 {t.expandRadiusBtn}</span>
             </button>
           )}
         </div>

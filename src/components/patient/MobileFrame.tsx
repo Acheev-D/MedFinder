@@ -10,7 +10,7 @@ interface MobileFrameProps {
 }
 
 export const MobileFrame: React.FC<MobileFrameProps> = ({ children }) => {
-  const { status, resetSimulator, showSplash, setShowSplash } = useSimulator();
+  const { status, resetSimulator, showSplash, setShowSplash, language, toggleLanguage, t } = useSimulator();
   const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return (
@@ -39,29 +39,41 @@ export const MobileFrame: React.FC<MobileFrameProps> = ({ children }) => {
             </div>
           </div>
 
-          {/* App Brand Header */}
+          {/* App Brand Header with Language Toggle (A/अ) */}
           <div className="px-4 py-2.5 bg-white/90 backdrop-blur-md border-b border-slate-100 flex items-center justify-between z-10">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2.5">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
                 <HeartPulse className="w-5 h-5 text-white" />
               </div>
               <div>
-                <div className="text-sm font-bold text-slate-900 leading-none">
-                  MedFinder Live
+                <div className="text-sm font-black text-slate-900 leading-none">
+                  {t.appTitle}
                 </div>
-                <p className="text-[11px] text-slate-400 font-medium">Instant Counter Verification</p>
               </div>
             </div>
 
-            {status !== 'IDLE' && (
+            <div className="flex items-center gap-2">
+              {/* Language Toggle Button (A / अ) */}
               <button
-                onClick={resetSimulator}
-                title="Reset Patient Search"
-                className="text-[11px] font-medium text-slate-500 hover:text-brand-600 px-2 py-1 rounded-lg hover:bg-slate-100 transition-colors"
+                onClick={toggleLanguage}
+                title={language === 'en' ? 'Switch to Hindi (हिंदी)' : 'Switch to English'}
+                className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50/90 hover:bg-blue-100/90 text-brand-700 border border-blue-200 shadow-xs active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
               >
-                Reset
+                <span className={language === 'en' ? 'font-black text-brand-800' : 'text-slate-400 font-medium'}>A</span>
+                <span className="text-slate-300 font-normal text-[10px]">/</span>
+                <span className={language === 'hi' ? 'font-black text-brand-800' : 'text-slate-400 font-medium'}>अ</span>
               </button>
-            )}
+
+              {status !== 'IDLE' && (
+                <button
+                  onClick={resetSimulator}
+                  title="Reset Patient Search"
+                  className="text-[11px] font-medium text-slate-500 hover:text-brand-600 px-2 py-1 rounded-lg hover:bg-slate-100 transition-colors"
+                >
+                  {t.reset}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Screen Content Body */}

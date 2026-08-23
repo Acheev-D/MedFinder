@@ -3,7 +3,6 @@ import {
   Store,
   Volume2,
   VolumeX,
-  RotateCcw,
   CheckCircle2,
   Upload,
   FileSpreadsheet,
@@ -21,7 +20,6 @@ export const PharmacistTerminal: React.FC = () => {
     status,
     isMuted,
     toggleMute,
-    resetSimulator,
     activeOffer,
     toggleTerminalCollapse,
     uploadedInventory,
@@ -41,8 +39,8 @@ export const PharmacistTerminal: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col space-y-4 max-w-2xl w-full">
-      {/* Pharmacist Terminal Main Frame */}
-      <div className="bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-6 border border-slate-200/90 shadow-2xl shadow-blue-900/10 space-y-5">
+      {/* Pharmacist Terminal Main Frame (Explicitly isolated Light Theme bg-white text-slate-900) */}
+      <div className="bg-white/95 backdrop-blur-xl text-slate-900 rounded-[2.5rem] p-6 border border-slate-200 shadow-2xl shadow-blue-900/10 space-y-5">
         
         {/* Terminal Header & Status Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200/80">
@@ -69,12 +67,12 @@ export const PharmacistTerminal: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Terminal Utilities & Collapse Button */}
+          {/* Quick Terminal Utilities: Audio Alert Chime & Collapse Panel */}
           <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               onClick={toggleMute}
               title={isMuted ? 'Unmute Audio Alert Chime' : 'Mute Audio Alert Chime'}
-              className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 isMuted
                   ? 'bg-slate-100 text-slate-400 border-slate-200'
                   : 'bg-blue-50 text-brand-700 border-blue-200 hover:bg-blue-100'
@@ -84,20 +82,11 @@ export const PharmacistTerminal: React.FC = () => {
               <span className="hidden md:inline">{isMuted ? 'Muted' : 'Chime On'}</span>
             </button>
 
-            <button
-              onClick={resetSimulator}
-              title="Reset Demo Simulator"
-              className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span className="hidden md:inline">Reset</span>
-            </button>
-
             {/* Collapse Panel Button */}
             <button
               onClick={toggleTerminalCollapse}
               title="Collapse Pharmacist Panel into Sidebar Pill"
-              className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
+              className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
             >
               <PanelRightClose className="w-4 h-4" />
               <span className="hidden lg:inline">Collapse</span>
@@ -118,7 +107,7 @@ export const PharmacistTerminal: React.FC = () => {
             
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="py-1.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
+              className="py-1.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5 text-brand-600" />
               <span>Upload Inventory (.xlsx / .csv)</span>
@@ -126,7 +115,7 @@ export const PharmacistTerminal: React.FC = () => {
 
             <button
               onClick={loadSampleInventory}
-              className="py-1.5 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold flex items-center gap-1 transition-colors"
+              className="py-1.5 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 text-amber-600 fill-amber-600" />
               <span>Load Sample Stock</span>
@@ -137,7 +126,7 @@ export const PharmacistTerminal: React.FC = () => {
           {uploadedInventory && (
             <button
               onClick={() => setIsInventoryDrawerOpen(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors cursor-pointer"
               title="Click to view full inventory spreadsheet table"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
