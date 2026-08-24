@@ -38,6 +38,11 @@ interface SimulatorContextType {
   isDirectionsOpen: boolean;
   savedUntilTimeStr: string;
 
+  // Real Prescription Camera & Upload State
+  prescriptionImage: string | null;
+  setPrescriptionImage: (image: string | null) => void;
+  clearPrescriptionImage: () => void;
+
   // Language & Translation Support
   language: Language;
   setLanguage: (lang: Language) => void;
@@ -78,7 +83,7 @@ interface SimulatorContextType {
 
   // Actions
   setSearchQuery: (query: string) => void;
-  selectMedicine: (medicine: Medicine) => void;
+  selectMedicine: (medicine: Medicine | null) => void;
   setAllowAlternatives: (allow: boolean) => void;
   startStoreCheck: () => void;
   expandRadius: () => void;
@@ -126,6 +131,9 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [activeOffer, setActiveOffer] = useState<ActiveOffer | null>(null);
   const [pickupCode] = useState<string>('4829');
 
+  // Real Prescription Camera & Image Upload State
+  const [prescriptionImage, setPrescriptionImage] = useState<string | null>(null);
+
   // Language state (Default: 'en')
   const [language, setLanguage] = useState<Language>('en');
 
@@ -161,6 +169,10 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [savedUntilTimeStr, setSavedUntilTimeStr] = useState<string>('4:15 PM');
 
   const t = TRANSLATIONS[language];
+
+  const clearPrescriptionImage = useCallback(() => {
+    setPrescriptionImage(null);
+  }, []);
 
   const toggleLanguage = useCallback(() => {
     setLanguage(prev => (prev === 'en' ? 'hi' : 'en'));
@@ -291,9 +303,21 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
     addLog('STORE_PING', 'Inventory Unloaded', 'Offline inventory catalog cleared from terminal.');
   }, [addLog]);
 
-  // Start Store Check (Radar Mode & Broadcast to Inquiries Queue with allowAlternatives flag)
+  // Start Store Check (Radar Mode & Broadcast to Inquiries Queue with allowAlternatives flag & prescription image)
   const startStoreCheck = useCallback(() => {
-    if (!selectedMedicine) return;
+    const medToSearch = selectedMedicine || {
+      id: 'med_rx_custom',
+      brandName: searchQuery.trim() || (prescriptionImage ? 'Prescription Upload' : 'Prescribed Medicine'),
+      activeFormula: 'Active Doctor Prescription',
+      dosageForm: 'Prescription Item',
+      brandPrice: 150,
+      genericEquivalent: {
+        name: 'Generic Equivalent Formulation',
+        price: 55,
+        savingsPercent: 63
+      }
+    };
+
     setStatus('CHECKING_STORES');
     setTimerSeconds(60);
     setActiveOffer(null);
@@ -303,13 +327,14 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
       id: inquiryId,
       patientId: 'patient_current',
       isCurrentPatient: true,
-      medicine: selectedMedicine,
+      medicine: medToSearch,
       allowAlternatives,
       distance: '800m away',
       customerLocation: 'Sunrise Junction (800m)',
       timerSeconds: 60,
       createdAt: Date.now(),
-      status: 'PENDING'
+      status: 'PENDING',
+      prescriptionImage: prescriptionImage || undefined
     };
 
     setIncomingInquiries(prev => [newInquiry, ...prev.filter(i => !i.isCurrentPatient)]);
@@ -317,11 +342,11 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
     sound.playInquiryChime();
     addLog(
       'SEARCH_INIT',
-      `Reverse-demand inquiry broadcasted`,
-      `Pinging ${searchRadius === '3km' ? '3' : '6'} pharmacies within ${searchRadius} for ${selectedMedicine.brandName} (${allowAlternatives ? 'Generic Accepted' : 'Exact Brand Only'})`,
+      `Reverse-demand inquiry broadcasted${prescriptionImage ? ' (with Photo Rx)' : ''}`,
+      `Pinging ${searchRadius === '3km' ? '3' : '6'} pharmacies within ${searchRadius} for ${medToSearch.brandName} (${allowAlternatives ? 'Generic Accepted' : 'Exact Brand Only'})`,
       `${searchRadius} Radius`
     );
-  }, [selectedMedicine, allowAlternatives, searchRadius, addLog]);
+  }, [selectedMedicine, searchQuery, prescriptionImage, allowAlternatives, searchRadius, addLog]);
 
   // Timer countdown during CHECKING_STORES
   useEffect(() => {
@@ -349,31 +374,43 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
     setTimerSeconds(60);
     setActiveOffer(null);
 
-    if (selectedMedicine) {
-      const inquiryId = `inq_${Date.now()}`;
-      const newInquiry: IncomingInquiry = {
-        id: inquiryId,
-        patientId: 'patient_current',
-        isCurrentPatient: true,
-        medicine: selectedMedicine,
-        allowAlternatives,
-        distance: '800m away',
-        customerLocation: 'Sunrise Junction (800m)',
-        timerSeconds: 60,
-        createdAt: Date.now(),
-        status: 'PENDING'
-      };
-      setIncomingInquiries(prev => [newInquiry, ...prev.filter(i => !i.isCurrentPatient)]);
-    }
+    const medToSearch = selectedMedicine || {
+      id: 'med_rx_custom',
+      brandName: searchQuery.trim() || (prescriptionImage ? 'Prescription Upload' : 'Prescribed Medicine'),
+      activeFormula: 'Active Doctor Prescription',
+      dosageForm: 'Prescription Item',
+      brandPrice: 150,
+      genericEquivalent: {
+        name: 'Generic Equivalent Formulation',
+        price: 55,
+        savingsPercent: 63
+      }
+    };
+
+    const inquiryId = `inq_${Date.now()}`;
+    const newInquiry: IncomingInquiry = {
+      id: inquiryId,
+      patientId: 'patient_current',
+      isCurrentPatient: true,
+      medicine: medToSearch,
+      allowAlternatives,
+      distance: '800m away',
+      customerLocation: 'Sunrise Junction (800m)',
+      timerSeconds: 60,
+      createdAt: Date.now(),
+      status: 'PENDING',
+      prescriptionImage: prescriptionImage || undefined
+    };
+    setIncomingInquiries(prev => [newInquiry, ...prev.filter(i => !i.isCurrentPatient)]);
 
     sound.playInquiryChime();
     addLog(
       'RADIUS_EXPANDED',
       'Search radius expanded to 8 km',
-      `Now asking 6 medical stores including 24x7 hubs for ${selectedMedicine?.brandName || 'medicine'}`,
+      `Now asking 6 medical stores including 24x7 hubs for ${medToSearch.brandName}`,
       '8km Radius'
     );
-  }, [selectedMedicine, allowAlternatives, addLog]);
+  }, [selectedMedicine, searchQuery, prescriptionImage, allowAlternatives, addLog]);
 
   // Unified Pharmacist Response Handler with Optional Quoted Price
   const respondToInquiry = useCallback((inquiryId: string, choice: 'EXACT' | 'GENERIC' | 'OUT_OF_STOCK', customPrice?: number) => {
@@ -400,7 +437,8 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
             savingsAmount: 0,
             savingsPercent: 0,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            claimedAt: Date.now()
+            claimedAt: Date.now(),
+            prescriptionImage: target.prescriptionImage
           };
           setActiveOffer(offer);
           setStatus('STORE_FOUND');
@@ -436,7 +474,8 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
             savingsAmount: savings,
             savingsPercent: savingsPercent > 0 ? savingsPercent : generic.savingsPercent,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            claimedAt: Date.now()
+            claimedAt: Date.now(),
+            prescriptionImage: target.prescriptionImage
           };
           setActiveOffer(offer);
           setStatus('STORE_FOUND');
@@ -516,7 +555,8 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
       storeId: activeOffer.storeId,
       status: 'HELD',
       createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isCurrentPatient: true
+      isCurrentPatient: true,
+      prescriptionImage: activeOffer.prescriptionImage
     };
 
     setReservations(prev => [newReservation, ...prev.filter(r => r.token !== pickupCode)]);
@@ -663,6 +703,7 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
   const resetSimulator = useCallback(() => {
     setSearchQuery('Augmentin 625 Duo');
     setSelectedMedicine(MEDICINE_CATALOG[0]);
+    setPrescriptionImage(null);
     setAllowAlternatives(false);
     setSearchRadius('3km');
     setStatus('IDLE');
@@ -685,9 +726,11 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
     setTimerSeconds(5);
   }, []);
 
-  const selectMedicine = useCallback((med: Medicine) => {
+  const selectMedicine = useCallback((med: Medicine | null) => {
     setSelectedMedicine(med);
-    setSearchQuery(med.brandName);
+    if (med) {
+      setSearchQuery(med.brandName);
+    }
   }, []);
 
   return (
@@ -703,6 +746,9 @@ export const SimulatorProvider: React.FC<{ children: ReactNode }> = ({ children 
         pickupCode,
         isDirectionsOpen,
         savedUntilTimeStr,
+        prescriptionImage,
+        setPrescriptionImage,
+        clearPrescriptionImage,
         language,
         setLanguage,
         toggleLanguage,

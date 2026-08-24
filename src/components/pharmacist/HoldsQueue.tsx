@@ -5,7 +5,9 @@ import {
   Phone,
   AlertCircle,
   KeyRound,
-  PackageCheck
+  PackageCheck,
+  FileImage,
+  X
 } from 'lucide-react';
 import { useSimulator } from '../../context/SimulatorContext';
 
@@ -14,10 +16,12 @@ export const HoldsQueue: React.FC = () => {
     reservations,
     verificationFeedback,
     verifyAndHandover,
-    clearVerificationFeedback
+    clearVerificationFeedback,
+    t
   } = useSimulator();
 
   const [inputToken, setInputToken] = useState<string>('');
+  const [viewingRxImage, setViewingRxImage] = useState<string | null>(null);
 
   const activeHolds = reservations.filter(r => r.status === 'HELD');
 
@@ -38,6 +42,56 @@ export const HoldsQueue: React.FC = () => {
 
   return (
     <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg p-5 space-y-4">
+      {/* Full-Size Prescription Image Lightbox Modal */}
+      {viewingRxImage && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200 animate-scale-in">
+            {/* Lightbox Header */}
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-brand-600">
+                  <FileImage className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {t.viewRx}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">Prescription associated with counter reservation</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setViewingRxImage(null)}
+                className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Lightbox Image Stage */}
+            <div className="p-4 bg-slate-900/5 max-h-[70vh] overflow-auto flex items-center justify-center">
+              <img
+                src={viewingRxImage}
+                alt="Patient Prescription Full View"
+                className="max-h-[60vh] w-auto max-w-full rounded-xl object-contain shadow-lg border border-slate-200"
+              />
+            </div>
+
+            {/* Lightbox Footer */}
+            <div className="p-3.5 bg-slate-50 border-t border-slate-100 text-center">
+              <button
+                type="button"
+                onClick={() => setViewingRxImage(null)}
+                className="py-2 px-5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Queue Header & Verification Box */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
         <div>
@@ -68,7 +122,7 @@ export const HoldsQueue: React.FC = () => {
 
           <button
             type="submit"
-            className="py-2 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all whitespace-nowrap"
+            className="py-2 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer"
           >
             <KeyRound className="w-3.5 h-3.5" />
             <span>Verify & Complete Handover</span>
@@ -93,8 +147,9 @@ export const HoldsQueue: React.FC = () => {
           </div>
 
           <button
+            type="button"
             onClick={clearVerificationFeedback}
-            className="text-[11px] font-bold text-slate-400 hover:text-slate-700 px-1"
+            className="text-[11px] font-bold text-slate-400 hover:text-slate-700 px-1 cursor-pointer"
           >
             ✕
           </button>
@@ -142,6 +197,19 @@ export const HoldsQueue: React.FC = () => {
                       {item.isGeneric ? 'Generic Substitute' : 'Exact Brand'}
                     </span>
                     <span className="text-xs font-bold text-slate-800">₹{item.price.toFixed(2)}</span>
+
+                    {/* Attached Rx Badge in Queue */}
+                    {item.prescriptionImage && (
+                      <button
+                        type="button"
+                        onClick={() => setViewingRxImage(item.prescriptionImage!)}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-brand-800 border border-blue-200 hover:bg-blue-200 transition-colors cursor-pointer"
+                        title="Click to view attached patient prescription photo"
+                      >
+                        <FileImage className="w-3 h-3 text-brand-600" />
+                        <span>📄 {t.rxAttached}</span>
+                      </button>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-3 text-[11px] text-slate-500 font-medium">
@@ -158,7 +226,7 @@ export const HoldsQueue: React.FC = () => {
                 </div>
               </div>
 
-              {/* Status Badge - Strict Verification Indicator (No 1-click bypass) */}
+              {/* Status Badge - Strict Verification Indicator */}
               <div className="flex items-center gap-2 justify-end">
                 {item.status === 'VERIFIED_HANDED_OVER' ? (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">

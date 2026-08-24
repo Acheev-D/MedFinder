@@ -66,6 +66,7 @@ export interface ActiveOffer {
   timestamp: string;
   claimedAt: number;
   token?: string;
+  prescriptionImage?: string | null;
 }
 
 export interface IncomingInquiry {
@@ -79,6 +80,7 @@ export interface IncomingInquiry {
   timerSeconds: number;
   createdAt: number;
   status: 'PENDING' | 'OFFERED' | 'DECLINED' | 'TIMEOUT';
+  prescriptionImage?: string | null;
 }
 
 export interface HoldReservation {
@@ -98,6 +100,7 @@ export interface HoldReservation {
   status: 'HELD' | 'VERIFIED_HANDED_OVER' | 'CANCELLED';
   createdAt: string;
   isCurrentPatient?: boolean;
+  prescriptionImage?: string | null;
 }
 
 export interface PharmacyStore {

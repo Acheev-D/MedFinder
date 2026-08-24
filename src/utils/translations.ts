@@ -28,6 +28,12 @@ export const TRANSLATIONS = {
     prescriptionNotice: "Show this code & your physical prescription at the counter.",
     cancelHoldBtn: "Cancel Hold",
     
+    // Prescription Camera & Image Upload Keys
+    attachPrescription: "Upload / Snap Prescription",
+    rxAttached: "Prescription Attached",
+    viewRx: "View Prescription",
+    removeRx: "Remove",
+    
     // Additional patient screen translations
     reset: "Reset",
     prescribedBrand: "Prescribed Brand",
@@ -90,6 +96,12 @@ export const TRANSLATIONS = {
     directionsBtn: "मैप पर रास्ता देखें",
     prescriptionNotice: "काउंटर पर यह कोड और डॉक्टर का पर्चा दिखाएं।",
     cancelHoldBtn: "बुकिंग रद्द करें",
+    
+    // Prescription Camera & Image Upload Keys
+    attachPrescription: "पर्चा फोटो खींचें / अपलोड करें",
+    rxAttached: "पर्चा संलग्न है",
+    viewRx: "पर्चा देखें",
+    removeRx: "हटाएं",
     
     // Additional patient screen translations
     reset: "रीसेट",

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Search,
   Pill,
@@ -6,7 +6,10 @@ import {
   ShieldCheck,
   CheckCircle2,
   Lock,
-  Layers
+  Layers,
+  Camera,
+  FileText,
+  X
 } from 'lucide-react';
 import { useSimulator } from '../../context/SimulatorContext';
 import { MEDICINE_CATALOG } from '../../data/medicines';
@@ -21,10 +24,32 @@ export const SearchScreen: React.FC = () => {
     allowAlternatives,
     setAllowAlternatives,
     startStoreCheck,
+    prescriptionImage,
+    setPrescriptionImage,
+    clearPrescriptionImage,
     t
   } = useSimulator();
 
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle camera photo capture or image file selection
+  const handleImageCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        if (result) {
+          setPrescriptionImage(result);
+          if (!searchQuery.trim()) {
+            setSearchQuery('Prescription Upload');
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Filter autocomplete suggestions based on query
   const suggestions = MEDICINE_CATALOG.filter(med =>
@@ -40,16 +65,26 @@ export const SearchScreen: React.FC = () => {
 
   return (
     <div className="flex-1 p-4 flex flex-col justify-between animate-fade-in">
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         
+        {/* Hidden Camera / File Input */}
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          ref={fileInputRef}
+          onChange={handleImageCapture}
+          className="hidden"
+        />
+
         {/* Intro Greeting Banner */}
-        <div className="pt-2">
+        <div className="pt-1.5">
           <h1 className="text-xl font-black text-slate-900 tracking-tight leading-tight">
             {t.tagline}
           </h1>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar with Camera Action Button */}
         <div className="relative">
           <div className={`relative flex items-center bg-white rounded-full border transition-all duration-200 shadow-sm ${
             isFocused ? 'border-brand-500 ring-2 ring-brand-500/20 shadow-md' : 'border-slate-200 hover:border-slate-300'
@@ -63,16 +98,28 @@ export const SearchScreen: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsFocused(true)}
               placeholder={t.searchPlaceholder}
-              className="w-full py-3.5 pr-4 text-sm font-medium text-slate-800 placeholder-slate-400 bg-transparent outline-none rounded-full"
+              className="w-full py-3.5 pr-2 text-sm font-medium text-slate-800 placeholder-slate-400 bg-transparent outline-none rounded-full"
             />
+
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery('')}
-                className="mr-3 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                className="mr-1 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full w-5 h-5 flex items-center justify-center font-bold"
               >
                 ×
               </button>
             )}
+
+            {/* Camera Upload Action Button */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              title={t.attachPrescription}
+              className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 active:scale-95 transition-all border border-blue-200 bg-white shadow-2xs mr-2 cursor-pointer shrink-0"
+            >
+              <Camera className="w-4 h-4 text-brand-600" />
+            </button>
           </div>
 
           {/* Autocomplete Suggestions Dropdown (No upfront hardcoded prices) */}
@@ -105,6 +152,35 @@ export const SearchScreen: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Prescription Attachment Badge / Preview Chip */}
+        {prescriptionImage && (
+          <div className="flex items-center justify-between bg-blue-50/90 border border-blue-200/90 rounded-2xl p-2 px-3 animate-slide-up shadow-2xs">
+            <div className="flex items-center gap-2.5">
+              <img
+                src={prescriptionImage}
+                alt="Prescription Thumbnail"
+                className="w-10 h-10 rounded-xl object-cover border border-blue-300 shadow-xs"
+              />
+              <div>
+                <div className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                  <FileText className="w-3.5 h-3.5 text-brand-600" />
+                  <span>{t.rxAttached}</span>
+                </div>
+                <span className="text-[10px] text-slate-500 font-medium">Ready for pharmacy dispatch</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={clearPrescriptionImage}
+              title={t.removeRx}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Selected Medicine Info Card & "Similar Medicine" Card */}
         {selectedMedicine && (
@@ -196,7 +272,7 @@ export const SearchScreen: React.FC = () => {
       <div className="pt-4">
         <button
           onClick={startStoreCheck}
-          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all group"
+          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all group cursor-pointer"
         >
           <span>{t.findStoresBtn}</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

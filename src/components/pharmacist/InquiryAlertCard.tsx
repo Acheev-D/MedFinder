@@ -9,7 +9,11 @@ import {
   Lock,
   Sparkles,
   IndianRupee,
-  PackageCheck
+  PackageCheck,
+  FileImage,
+  X,
+  Eye,
+  ZoomIn
 } from 'lucide-react';
 import { useSimulator } from '../../context/SimulatorContext';
 import type { IncomingInquiry } from '../../types';
@@ -20,11 +24,15 @@ export const InquiryAlertCard: React.FC = () => {
     respondToInquiry,
     timerSeconds,
     findInventoryMatch,
-    setIsInventoryDrawerOpen
+    setIsInventoryDrawerOpen,
+    t
   } = useSimulator();
 
   // Local state for optional price inputs per inquiry ID
   const [customPrices, setCustomPrices] = useState<Record<string, string>>({});
+
+  // Lightbox modal state for viewing prescription image full size
+  const [viewingRxImage, setViewingRxImage] = useState<string | null>(null);
 
   const activeInquiries = incomingInquiries.filter(i => i.status === 'PENDING');
 
@@ -47,6 +55,56 @@ export const InquiryAlertCard: React.FC = () => {
 
   return (
     <div className="space-y-3 animate-slide-up">
+      {/* Full-Size Prescription Image Lightbox Modal */}
+      {viewingRxImage && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200 animate-scale-in">
+            {/* Lightbox Header */}
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-brand-600">
+                  <FileImage className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {t.viewRx}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">Live patient camera upload</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setViewingRxImage(null)}
+                className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Lightbox Image Stage */}
+            <div className="p-4 bg-slate-900/5 max-h-[70vh] overflow-auto flex items-center justify-center">
+              <img
+                src={viewingRxImage}
+                alt="Patient Prescription Full View"
+                className="max-h-[60vh] w-auto max-w-full rounded-xl object-contain shadow-lg border border-slate-200"
+              />
+            </div>
+
+            {/* Lightbox Footer */}
+            <div className="p-3.5 bg-slate-50 border-t border-slate-100 text-center">
+              <button
+                type="button"
+                onClick={() => setViewingRxImage(null)}
+                className="py-2 px-5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+              >
+                Done Inspecting
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeInquiries.map((inquiry: IncomingInquiry) => {
         const med = inquiry.medicine;
         const generic = med.genericEquivalent;
@@ -121,6 +179,44 @@ export const InquiryAlertCard: React.FC = () => {
               </div>
             </div>
 
+            {/* Attached Prescription Photo Card (If Patient attached an actual camera image) */}
+            {inquiry.prescriptionImage && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50/70 border border-blue-200 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-2xs">
+                <div className="flex items-center gap-3">
+                  <div className="relative group cursor-pointer" onClick={() => setViewingRxImage(inquiry.prescriptionImage!)}>
+                    <img
+                      src={inquiry.prescriptionImage}
+                      alt="Prescription Thumbnail"
+                      className="w-12 h-12 rounded-xl object-cover border-2 border-brand-500 shadow-sm transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-slate-900/30 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ZoomIn className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-slate-900 flex items-center gap-1">
+                        <FileImage className="w-3.5 h-3.5 text-brand-600" />
+                        Attached Doctor Prescription Photo
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Uploaded by patient directly from camera
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setViewingRxImage(inquiry.prescriptionImage!)}
+                  className="py-1.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{t.viewRx}</span>
+                </button>
+              </div>
+            )}
+
             {/* Smart Match Flag on Uploaded Offline Inventory */}
             {primaryMatch && (
               <div className="bg-emerald-50/90 border border-emerald-300 rounded-2xl p-2.5 flex items-center justify-between gap-2 text-xs text-emerald-900 shadow-2xs">
@@ -134,7 +230,7 @@ export const InquiryAlertCard: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setIsInventoryDrawerOpen(true)}
-                  className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-white/80 hover:bg-white px-2 py-1 rounded-lg border border-emerald-300 shrink-0 transition-colors"
+                  className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-white/80 hover:bg-white px-2 py-1 rounded-lg border border-emerald-300 shrink-0 transition-colors cursor-pointer"
                 >
                   View Table
                 </button>
@@ -213,7 +309,7 @@ export const InquiryAlertCard: React.FC = () => {
                     {/* Action 1: Have Exact Brand */}
                     <button
                       onClick={() => respondToInquiry(inquiry.id, 'EXACT', customPriceNum)}
-                      className="py-3 px-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-between transition-all group"
+                      className="py-3 px-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-between transition-all group cursor-pointer"
                     >
                       <div className="flex items-center gap-2 text-left">
                         <CheckCircle2 className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" />
@@ -228,7 +324,7 @@ export const InquiryAlertCard: React.FC = () => {
                     {/* Action 2: Have Same Formula (Generic) */}
                     <button
                       onClick={() => respondToInquiry(inquiry.id, 'GENERIC', customPriceNum)}
-                      className="py-3 px-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-indigo-600/20 flex items-center justify-between transition-all group"
+                      className="py-3 px-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-indigo-600/20 flex items-center justify-between transition-all group cursor-pointer"
                     >
                       <div className="flex items-center gap-2 text-left">
                         <RefreshCw className="w-4 h-4 group-hover:rotate-45 transition-transform shrink-0 text-indigo-200" />
@@ -243,7 +339,7 @@ export const InquiryAlertCard: React.FC = () => {
                     {/* Action 3: Out of Stock */}
                     <button
                       onClick={() => respondToInquiry(inquiry.id, 'OUT_OF_STOCK')}
-                      className="py-3 px-3 rounded-2xl bg-rose-50 hover:bg-rose-100 active:scale-[0.98] text-rose-700 border border-rose-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 px-3 rounded-2xl bg-rose-50 hover:bg-rose-100 active:scale-[0.98] text-rose-700 border border-rose-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                     >
                       <XCircle className="w-4 h-4 text-rose-600" />
                       <span>Out of Stock</span>
@@ -255,7 +351,7 @@ export const InquiryAlertCard: React.FC = () => {
                     {/* Action 1: Have Exact Brand */}
                     <button
                       onClick={() => respondToInquiry(inquiry.id, 'EXACT', customPriceNum)}
-                      className="py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-between transition-all group"
+                      className="py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-between transition-all group cursor-pointer"
                     >
                       <div className="flex items-center gap-2 text-left">
                         <CheckCircle2 className="w-4.5 h-4.5 group-hover:scale-110 transition-transform shrink-0" />
@@ -270,7 +366,7 @@ export const InquiryAlertCard: React.FC = () => {
                     {/* Action 2: Out of Stock */}
                     <button
                       onClick={() => respondToInquiry(inquiry.id, 'OUT_OF_STOCK')}
-                      className="py-3.5 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 active:scale-[0.98] text-rose-700 border border-rose-200 font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                      className="py-3.5 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 active:scale-[0.98] text-rose-700 border border-rose-200 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
                       <XCircle className="w-4.5 h-4.5 text-rose-600" />
                       <span className="text-sm">Out of Stock</span>
