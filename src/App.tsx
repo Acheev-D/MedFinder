@@ -1,4 +1,5 @@
 import React from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { SimulatorProvider, useSimulator } from './context/SimulatorContext';
 import { HeaderBanner } from './components/shared/HeaderBanner';
 import { MobileFrame } from './components/patient/MobileFrame';
@@ -192,6 +193,7 @@ export default function App() {
   return (
     <SimulatorProvider>
       <SimulatorWorkspace />
+      <Analytics />
     </SimulatorProvider>
   );
 }
