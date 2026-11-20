@@ -89,7 +89,7 @@ MedFinder eliminates the need for complex, heavy inventory software by flipping 
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/Acheev-D/MedFinder.git](https://github.com/Acheev-D/MedFinder.git)
+git clone https://github.com/Acheev-D/MedFinder.git
 
 # 2. Navigate to project directory
 cd MedFinder
@@ -99,6 +99,7 @@ npm install
 
 # 4. Start the local development server
 npm run dev
+```
 
 🔒 Security & Edge Case Handling
 JIT Anti-Spam Barrier: Unverified users cannot lock pharmacy inventory without mobile OTP verification.
